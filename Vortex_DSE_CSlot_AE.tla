@@ -69,15 +69,23 @@
 EXTENDS Naturals, FiniteSets
 
 CONSTANTS
+    \* @type: Set(Str);
     Nodes,           \* finite set of node identifiers
+    \* @type: Set(Str);
     MsgIDs,          \* finite set of distinct message identifiers
+    \* @type: Int;
     MaxSlot          \* slot horizon (state-space bound)
 
 VARIABLES
+    \* @type: Int;
     current_slot,    \* global slot counter (justified by A1)
+    \* @type: Set({ id: Str, cslot: Int });
     network,         \* in-flight messages (SET)
+    \* @type: Str -> Set(Str);
     processed,       \* processed[n] = msg ids admitted by n in current cslot
+    \* @type: Str -> Str;
     phase,           \* phase[n] \in {"open", "frozen", "committed"}
+    \* @type: Str -> Set(Str);
     committed_set    \* committed_set[n] = AE-final input set for n at current cslot
 
 vars == <<current_slot, network, processed, phase, committed_set>>
