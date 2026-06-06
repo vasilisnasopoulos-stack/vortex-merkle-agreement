@@ -16,6 +16,23 @@ Safety invariants checked: `TypeInvariant`, `MerkleAgreement`, `CommittedSuperse
 `NoPhantomInCommitted`, `NoReorderAcrossCslot`, `PhaseProgressionValid`.
 Temporal properties checked: `EventualCommit`, `EventualAgreement`.
 
+## Apalache (symbolic / SMT-backed check)
+
+**Last run: 2026-06-06** · Apalache 0.58.0 · Java 17.
+
+Harness `MC_Vortex_DSE_CSlot_AE.tla` with `ConstInit` (Nodes={n1,n2}, MsgIDs={a,b},
+MaxSlot=1), checking `AllInv` — the conjunction of all safety invariants
+(`TypeInvariant`, `MerkleAgreement`, `CommittedSupersetsProcessed`,
+`NoPhantomInCommitted`, `NoReorderAcrossCslot`, `PhaseProgressionValid`) — to
+computation length 8:
+
+| Tool | Constants | Bound | Result |
+|------|-----------|-------|--------|
+| Apalache `check` | Nodes={n1,n2}, MsgIDs={a,b}, MaxSlot=1 | length 8 | **NoError** |
+
+This is a second, independent verification path: TLC explores states explicitly,
+Apalache discharges the invariants symbolically via SMT. Both agree.
+
 ## Scope note
 
 These are **bounded** model-checking results (small finite instances), not unbounded
