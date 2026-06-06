@@ -57,3 +57,7 @@ Requires Java 11+ and `tla2tools.jar` (TLC). From this directory:
 
 This runs both configurations and writes logs to `logs/`. See `STATUS.md` for the
 latest results.
+
+## License
+
+Released under the [MIT License](LICENSE) (c) 2026 Vasilis Nasopoulos.
