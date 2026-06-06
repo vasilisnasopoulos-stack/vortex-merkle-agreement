@@ -49,14 +49,24 @@ identical `committed_set` for the current slot.
 
 ## Reproduce
 
-Requires Java 11+ and `tla2tools.jar` (TLC). From this directory:
+Two independent checkers verify the same specification.
+
+**TLC** (explicit-state) — requires Java 11+ and `tla2tools.jar`:
 
 ```sh
 ./run_tlc.sh /path/to/tla2tools.jar
 ```
 
-This runs both configurations and writes logs to `logs/`. See `STATUS.md` for the
-latest results.
+**Apalache** (symbolic / SMT-backed) — requires Apalache ≥ 0.58 and Java 17+. The
+harness `MC_Vortex_DSE_CSlot_AE.tla` fixes the constants and bundles every safety
+invariant as `AllInv`:
+
+```sh
+APALACHE_BIN=/path/to/apalache-mc ./run_apalache.sh   # default length 8
+```
+
+TLC writes logs to `logs/`; Apalache writes to `_apalache-out/`. See `STATUS.md`
+for the latest results from both checkers.
 
 ## License
 
