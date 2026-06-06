@@ -1,3 +1,5 @@
 logs/
 states/
+_apalache-out/
+tmp/
 *.jar
