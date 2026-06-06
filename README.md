@@ -60,4 +60,4 @@ latest results.
 
 ## License
 
-Released under the [MIT License](LICENSE) (c) 2026 Vasilis Nasopoulos.
+Released under the [Apache License 2.0](LICENSE). Copyright 2026 Vasilis Nasopoulos.
