@@ -47,6 +47,44 @@ identical `committed_set` for the current slot.
 - The multi-round Bloom+Merkle wire protocol details — the abstract
   `Reconcile = union` is the *specification* those rounds must refine.
 
+### Origin / sender identity (deliberately out of scope)
+
+- **Message origin / sender identity.** This spec answers *which set of inputs* correct
+  nodes agree on per slot. It deliberately does **not** carry a sender/origin field, and
+  therefore makes **no** claim about resisting sender spoofing or Sybil identities — by
+  design, not by omission:
+  - The temporal+identity Byzantine model `Vortex_DSE_CSlot_Skew.tla` (separate spec) adds a
+    per-message `origin` field and an adversary that spoofs **both** timestamp and origin,
+    and shows the local exactly-once / no-phantom / strict-equality properties still hold.
+  - Actual origin authentication / anti-Sybil **enforcement** is an implementation-layer
+    concern: the admission OTP keyring (keyed MAC) and the BLS PKI registry bind
+    admission/votes to a node identity. This agreement layer reasons about the agreed set
+    **above** that trust boundary; it assumes the boundary rather than re-proving it.
+
+### Known gaps → future refinement work (acknowledged, not closed here)
+
+Reviewer-raised limits that do **not** break any proven property of this spec as published,
+but that a stronger composed bundle should address. Listed so they are acknowledged
+explicitly rather than left silent:
+
+- **Cross-slot replay (module composition).** In isolation this spec tracks admitted ids
+  **per slot** (`processed` resets each slot), so a duplicate re-injected with a new slot
+  stamp could be admitted again. This is closed by the separate `Vortex_DSE_ExactlyOnce.tla`,
+  whose `persisted` set is a **global** id history (strictly stronger than per-`(id, slot)`);
+  the remaining gap is that the two are **not yet composed** into a single spec.
+- **Crash/rejoin during a multi-slot run.** Crash/rejoin is delegated to the core module's
+  persisted layer; a single spec composing **crash × agreement across slots** is
+  acknowledged future work.
+- **Multi-round Reconcile under crash.** `Reconcile` is modeled as one **atomic** union,
+  which hides a crash occurring **mid-reconcile-round**. A refinement that unfolds Reconcile
+  into the real Bloom + repeated-Merkle rounds and re-checks agreement under a mid-round
+  crash is future work.
+- **Bloom false positives.** The abstract exact-union cannot exhibit Bloom false-positive
+  "ghost" ids. The real protocol uses a Bloom **hint** + an **exact Merkle confirm**, so a
+  false positive costs an extra confirm round (bandwidth), never a phantom commit. A
+  refinement modeling the Bloom layer explicitly (FP ⇒ bandwidth, not a `NoPhantom`
+  violation) is future work.
+
 ## Reproduce
 
 Two independent checkers verify the same specification.
