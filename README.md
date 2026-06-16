@@ -1,3 +1,9 @@
+> **Vortex public research bundle**
+>
+> This repository is one part of the public Vortex DSE verification bundle.
+>
+> [Spec](https://github.com/vasilisnasopoulos-stack/vortex-dse-cslot-spec) · [Proofs](https://github.com/vasilisnasopoulos-stack/vortex-dse-cslot-proofs) · [Merkle Agreement](https://github.com/vasilisnasopoulos-stack/vortex-merkle-agreement)
+
 # Vortex DSE — Merkle Agreement
 
 TLA+ specification for the **per-slot input-set agreement** layer of Vortex DSE. After C-slot admission, correct live nodes run a slot-local barrier and commit the same input set for that slot.
