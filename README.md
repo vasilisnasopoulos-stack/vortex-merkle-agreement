@@ -1,110 +1,128 @@
-# Vortex DSE — Merkle Agreement (per-slot input-set agreement)
+# Vortex DSE — Merkle Agreement
 
-A TLA+ specification proving that all correct live nodes end a slot holding the
-**same input set**, cryptographically verified by Merkle-root equality.
+TLA+ specification for the **per-slot input-set agreement** layer of Vortex DSE. After C-slot admission, correct live nodes run a slot-local barrier and commit the same input set for that slot.
+
+## Position in the public verification bundle
+
+| Repository | Role | Verification status |
+|---|---|---|
+| [vortex-dse-cslot-proofs](https://github.com/vasilisnasopoulos-stack/vortex-dse-cslot-proofs) | Late-tolerant C-slot admission; deductive safety proofs | TLAPS: `[]TypeInvariant`, `[]NoFutureAdmission`; all 194 obligations proved |
+| [vortex-dse-cslot-spec](https://github.com/vasilisnasopoulos-stack/vortex-dse-cslot-spec) | Strict C-slot admission, clock skew, Byzantine timestamp/origin spoofing, executable reference | TLC + Apalache bounded checks; JavaScript reference scenarios |
+| **vortex-merkle-agreement** ← you are here | Per-slot input-set agreement: Freeze → Reconcile → Commit | TLC + Apalache bounded checks under declared assumptions |
+
+## Protocol shape
+
+```text
+C-slot admission
+    ↓
+Local processed set
+    ↓
+Freeze admission for slot k
+    ↓
+Reconcile node views
+    ↓
+Merkle/hash equality confirms identical set
+    ↓
+Commit slot-final input set
+```
+
+The headline property is `MerkleAgreement`: any two committed correct live nodes hold an identical `committed_set` for the current slot.
 
 ## The property
 
-After admission, each live node runs a three-step barrier inside the residual
-portion of the slot:
+After admission, each live node runs a three-step barrier inside the residual portion of the slot:
 
 1. **Freeze** — close the local admission window for the slot.
-2. **Reconcile** — exchange views and converge on the **union** of admitted ids,
-   verified by Merkle-root equality (abstracted here as a single atomic union;
-   the implementation runs a Bloom round + repeated Merkle/hashlist).
-3. **Commit** — adopt a slot-final input set that is **bit-identical across all
-   correct live nodes**.
+2. **Reconcile** — exchange views and converge on the union of admitted ids, verified by Merkle-root equality.
+3. **Commit** — adopt a slot-final input set that is bit-identical across all correct live nodes.
 
-The headline invariant `MerkleAgreement` states: any two committed nodes hold an
-identical `committed_set` for the current slot.
+In this model, `Reconcile` is represented as an abstract atomic union. The real implementation may use Bloom hints, repeated Merkle roots, hash lists, or another wire-level refinement, but that lower-level reconciliation protocol is not unfolded in this repository.
 
-## Invariants & liveness
+## Claims matrix
 
-- `MerkleAgreement` (headline) — committed nodes hold identical sets.
-- `CommittedSupersetsProcessed` — Reconcile only adds; no local rollback.
+| Claim | Status | Method | Scope |
+|---|---|---|---|
+| Committed nodes hold identical sets | Checked | TLC + Apalache | Configured finite instances under declared assumptions |
+| Committed set is a superset of locally processed ids | Checked | TLC + Apalache | Configured finite instances |
+| No phantom committed ids | Checked | TLC + Apalache | Configured finite instances |
+| No reorder across C-slot | Checked | TLC + Apalache | Configured finite instances |
+| Phase progression is valid | Checked | TLC + Apalache | `open → frozen → committed` only |
+| Eventual commit/agreement | Checked | Temporal model checking | Under declared fairness assumptions |
+| Crash/rejoin during agreement phase | **Not modeled here** | — | Future composed refinement |
+| Multi-round Bloom/Merkle wire protocol | **Abstracted** | — | `Reconcile` is modeled as atomic union |
+| Cross-slot replay protection | **Not closed in this module alone** | — | Requires composition with global exactly-once/persistence module |
+| Full end-to-end consensus/finality | **Not claimed here** | — | Out of scope of this repository |
+
+## Declared assumptions
+
+| Assumption | Meaning | Why it matters |
+|---|---|---|
+| A1 — bounded clock skew | `Δ_skew < Δt / 2` | Justifies treating correct nodes as sharing the same slot except near edge transitions |
+| A2 — freeze barrier within slot | Agreement runs after admission closes and before the slot budget expires | Prevents open admission from racing with commit |
+| A3 — reconcile completeness under bounded loss | Missing ids can be recovered during reconciliation | Lets the abstract union represent successful view convergence |
+| A4 — all-live during the agreement phase | Participant set is fixed at Freeze | Crash/rejoin inside the agreement phase is delegated to future composed work |
+
+These assumptions define the operational envelope of this artifact. They are not hidden; they are part of the model boundary.
+
+## Invariants and liveness
+
+- `MerkleAgreement` — committed nodes hold identical sets.
+- `CommittedSupersetsProcessed` — reconciliation only adds; no local rollback.
 - `NoPhantomInCommitted` — committed ids correspond to real network records.
-- `NoReorderAcrossCslot` — an id admitted in slot *k* keeps stamp *k*.
-- `PhaseProgressionValid` — `open → frozen → committed` only.
+- `NoReorderAcrossCslot` — an id admitted in slot `k` keeps stamp `k`.
+- `PhaseProgressionValid` — phase transitions follow `open → frozen → committed`.
 - `EventualCommit` / `EventualAgreement` — liveness under fairness.
 
-## Declared assumptions (operational envelope)
+## Origin and sender identity
 
-- **A1 — bounded clock skew.** `Δ_skew < Δt / 2`. Justifies abstracting per-node
-  clocks as a single global slot counter: at any real-time instant all correct
-  nodes observe the same slot (modulo edge transitions).
-- **A2 — freeze barrier within slot.** The agreement phase runs in the residual
-  portion of the slot after the admission deadline.
-- **A3 — reconcile completeness under bounded loss.** Modeled explicitly in the
-  companion *loss-recoverability* spec.
-- **A4 — all-live during the agreement phase.** The participant set is fixed at
-  Freeze. Crash/rejoin during the phase is out of scope here.
+This specification answers **which set of inputs** correct nodes agree on per slot. It deliberately does not carry a sender/origin field and therefore does not claim to solve sender spoofing or Sybil resistance inside this module.
 
-### Out of scope (honest limits)
+That boundary is handled elsewhere:
 
-- Crash/rejoin during the agreement phase.
-- A full partition where **no** node receives a message (then it is legitimately
-  deferred to a later slot by the producer; not an agreement violation).
-- The multi-round Bloom+Merkle wire protocol details — the abstract
-  `Reconcile = union` is the *specification* those rounds must refine.
+- the C-slot skew/adversarial model includes an origin field and models timestamp/origin spoofing;
+- production identity binding is an implementation-layer concern, e.g. keyed admission tokens, MACs, or BLS/PKI registry mechanisms.
 
-### Origin / sender identity (deliberately out of scope)
+This agreement layer reasons above that trust boundary.
 
-- **Message origin / sender identity.** This spec answers *which set of inputs* correct
-  nodes agree on per slot. It deliberately does **not** carry a sender/origin field, and
-  therefore makes **no** claim about resisting sender spoofing or Sybil identities — by
-  design, not by omission:
-  - The temporal+identity Byzantine model `Vortex_DSE_CSlot_Skew.tla` (separate spec) adds a
-    per-message `origin` field and an adversary that spoofs **both** timestamp and origin,
-    and shows the local exactly-once / no-phantom / strict-equality properties still hold.
-  - Actual origin authentication / anti-Sybil **enforcement** is an implementation-layer
-    concern: the admission OTP keyring (keyed MAC) and the BLS PKI registry bind
-    admission/votes to a node identity. This agreement layer reasons about the agreed set
-    **above** that trust boundary; it assumes the boundary rather than re-proving it.
+## Known gaps and future refinements
 
-### Known gaps → future refinement work (acknowledged, not closed here)
+These gaps do not break the properties claimed by this repository, but they are the next targets for a stronger composed bundle:
 
-Reviewer-raised limits that do **not** break any proven property of this spec as published,
-but that a stronger composed bundle should address. Listed so they are acknowledged
-explicitly rather than left silent:
-
-- **Cross-slot replay (module composition).** In isolation this spec tracks admitted ids
-  **per slot** (`processed` resets each slot), so a duplicate re-injected with a new slot
-  stamp could be admitted again. This is closed by the separate `Vortex_DSE_ExactlyOnce.tla`,
-  whose `persisted` set is a **global** id history (strictly stronger than per-`(id, slot)`);
-  the remaining gap is that the two are **not yet composed** into a single spec.
-- **Crash/rejoin during a multi-slot run.** Crash/rejoin is delegated to the core module's
-  persisted layer; a single spec composing **crash × agreement across slots** is
-  acknowledged future work.
-- **Multi-round Reconcile under crash.** `Reconcile` is modeled as one **atomic** union,
-  which hides a crash occurring **mid-reconcile-round**. A refinement that unfolds Reconcile
-  into the real Bloom + repeated-Merkle rounds and re-checks agreement under a mid-round
-  crash is future work.
-- **Bloom false positives.** The abstract exact-union cannot exhibit Bloom false-positive
-  "ghost" ids. The real protocol uses a Bloom **hint** + an **exact Merkle confirm**, so a
-  false positive costs an extra confirm round (bandwidth), never a phantom commit. A
-  refinement modeling the Bloom layer explicitly (FP ⇒ bandwidth, not a `NoPhantom`
-  violation) is future work.
+- **Cross-slot replay:** this module tracks admitted ids per slot; global exactly-once requires composition with a global persisted-id history.
+- **Crash/rejoin during multi-slot agreement:** crash handling is delegated to the admission/persistence layer; a single composed crash × agreement model is future work.
+- **Non-atomic reconciliation:** `Reconcile` is modeled as one atomic union; a future refinement should unfold Bloom/Merkle rounds and check mid-round crash behavior.
+- **Bloom false positives:** the abstract exact-union model cannot show Bloom false-positive ghost ids. In the intended design, Bloom is only a hint and exact Merkle confirmation prevents phantom commits. Modeling that explicitly is future work.
 
 ## Reproduce
 
 Two independent checkers verify the same specification.
 
-**TLC** (explicit-state) — requires Java 11+ and `tla2tools.jar`:
+### TLC
+
+Requires Java 11+ and `tla2tools.jar`:
 
 ```sh
 ./run_tlc.sh /path/to/tla2tools.jar
 ```
 
-**Apalache** (symbolic / SMT-backed) — requires Apalache ≥ 0.58 and Java 17+. The
-harness `MC_Vortex_DSE_CSlot_AE.tla` fixes the constants and bundles every safety
-invariant as `AllInv`:
+### Apalache
+
+Requires Apalache 0.58+ and Java 17+:
 
 ```sh
-APALACHE_BIN=/path/to/apalache-mc ./run_apalache.sh   # default length 8
+APALACHE_BIN=/path/to/apalache-mc ./run_apalache.sh
 ```
 
-TLC writes logs to `logs/`; Apalache writes to `_apalache-out/`. See `STATUS.md`
-for the latest results from both checkers.
+TLC writes logs to `logs/`; Apalache writes to `_apalache-out/`. See `STATUS.md` for current checker outputs.
+
+## Suggested reviewer path
+
+1. Read the claims matrix and assumptions table.
+2. Inspect the phase transition model: open, frozen, committed.
+3. Check the `MerkleAgreement` invariant and the no-phantom/no-reorder support invariants.
+4. Run TLC and Apalache to reproduce bounded results.
+5. Continue to the C-slot repositories to inspect admission and crash/rejoin safety.
+6. Treat end-to-end composition as the next formal milestone, not as an already claimed theorem.
 
 ## License
 
