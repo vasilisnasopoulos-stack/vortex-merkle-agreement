@@ -1,3 +1,7 @@
+> **Vortex DSE formal surface** · [Proofs (default + TLAPS)](https://github.com/vasilisnasopoulos-stack/vortex-dse-cslot-proofs) · [Strict spec + TLC](https://github.com/vasilisnasopoulos-stack/vortex-dse-cslot-spec) · [Merkle agreement](https://github.com/vasilisnasopoulos-stack/vortex-merkle-agreement) · [Profile](https://github.com/vasilisnasopoulos-stack)
+>
+> Production C engine is **not** public. This repo is **per-slot Merkle agreement** (baseline AE). Lossy specs are staged privately.
+
 > **Vortex public research bundle**
 >
 > This repository is one part of the public Vortex DSE verification bundle.
@@ -98,6 +102,20 @@ These gaps do not break the properties claimed by this repository, but they are 
 - **Crash/rejoin during multi-slot agreement:** crash handling is delegated to the admission/persistence layer; a single composed crash × agreement model is future work.
 - **Non-atomic reconciliation:** `Reconcile` is modeled as one atomic union; a future refinement should unfold Bloom/Merkle rounds and check mid-round crash behavior.
 - **Bloom false positives:** the abstract exact-union model cannot show Bloom false-positive ghost ids. In the intended design, Bloom is only a hint and exact Merkle confirmation prevents phantom commits. Modeling that explicitly is future work.
+
+## Sibling specifications (private staging)
+
+This public repo ships the **baseline** agreement module (`Vortex_DSE_CSlot_AE.tla`).
+Additional modules exist in private staging and are **not** published here unless
+explicitly released:
+
+| Module | Status | Property |
+|--------|--------|----------|
+| `Vortex_DSE_CSlot_AE.tla` | **Public (this repo)** | `MerkleAgreement` — identical committed sets per cslot |
+| `Vortex_DSE_CSlot_AE_Lossy.tla` | **Private / planned** | `MerkleAgreementUnderLoss`, `LossRecoverability` under bounded drops |
+| `Vortex_DSE_CSlot_AE_ExactlyOnce.tla` | **Private** | Exactly-once delivery slice — not part of public surface today |
+
+**Related public repos:** [C-slot proofs (default)](https://github.com/vasilisnasopoulos-stack/vortex-dse-cslot-proofs) · [Strict C-slot spec](https://github.com/vasilisnasopoulos-stack/vortex-dse-cslot-spec)
 
 ## Reproduce
 
