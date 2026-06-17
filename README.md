@@ -10,6 +10,11 @@
 
 # Vortex DSE — Merkle Agreement
 
+> **Slice:** this repo checks **baseline per-slot agreement** under ideal-network
+> assumptions (`Vortex_DSE_CSlot_AE.tla` only). Lossy recovery and cross-slot
+> exactly-once modules are **not** published here.
+> [Public slice map →](https://github.com/vasilisnasopoulos-stack/blob/main/SLICES.md)
+
 TLA+ specification for the **per-slot input-set agreement** layer of Vortex DSE. After C-slot admission, correct live nodes run a slot-local barrier and commit the same input set for that slot.
 
 ## Position in the public verification bundle
