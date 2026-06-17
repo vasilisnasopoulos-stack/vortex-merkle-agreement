@@ -33,6 +33,9 @@ computation length 8:
 This is a second, independent verification path: TLC explores states explicitly,
 Apalache discharges the invariants symbolically via SMT. Both agree.
 
+Per-invariant Apalache logs (2026-05-27, Apalache 0.57.0, length 8): `apalache/ae_logs/`.
+Reproduce: `APALACHE_BIN=/path/to/apalache-mc ./run_apalache.sh`
+
 ## Scope note
 
 These are **bounded** model-checking results (small finite instances), not unbounded

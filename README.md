@@ -137,7 +137,9 @@ Requires Apalache 0.58+ and Java 17+:
 APALACHE_BIN=/path/to/apalache-mc ./run_apalache.sh
 ```
 
-TLC writes logs to `logs/`; Apalache writes to `_apalache-out/`. See `STATUS.md` for current checker outputs.
+TLC writes logs to `logs/` (generated locally; gitignored). Apalache writes to
+`_apalache-out/` when you run `./run_apalache.sh`. Committed evidence:
+`apalache/ae_logs/`. See `STATUS.md`.
 
 ## Suggested reviewer path
 
@@ -147,6 +149,13 @@ TLC writes logs to `logs/`; Apalache writes to `_apalache-out/`. See `STATUS.md`
 4. Run TLC and Apalache to reproduce bounded results.
 5. Continue to the C-slot repositories to inspect admission and crash/rejoin safety.
 6. Treat end-to-end composition as the next formal milestone, not as an already claimed theorem.
+
+## TLAPS (next)
+
+Admission has unbounded TLAPS proofs in
+[vortex-dse-cslot-proofs](https://github.com/vasilisnasopoulos-stack/vortex-dse-cslot-proofs).
+**This repo** is the proposed next TLAPS target (`Vortex_DSE_CSlot_AE.tla` →
+`MerkleAgreement`). See `TLAPS_NEXT.md` and scaffold `Vortex_DSE_CSlot_AE_Proofs.tla`.
 
 ## License
 
