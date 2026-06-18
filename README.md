@@ -16,7 +16,7 @@
 > ([proofs repo](https://github.com/vasilisnasopoulos-stack/vortex-dse-cslot-proofs))
 > in design — no composed proof links them yet. Lossy recovery and cross-slot
 > exactly-once modules are **not** published here.
-> [How the parts connect →](https://github.com/vasilisnasopoulos-stack/blob/main/SLICES.md)
+> [How the parts connect →](https://github.com/vasilisnasopoulos-stack/vasilisnasopoulos-stack/blob/main/SLICES.md)
 
 TLA+ specification for the **per-slot input-set agreement** layer of Vortex DSE. After C-slot admission, correct live nodes run a slot-local barrier and commit the same input set for that slot.
 

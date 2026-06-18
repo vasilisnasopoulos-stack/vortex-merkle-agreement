@@ -4,7 +4,7 @@
 > **This repository publishes only the baseline agreement part**
 > (`Vortex_DSE_CSlot_AE.tla`). Lossy, exactly-once, and composed modules referenced
 > below are **not in this repo** — see
-> [how the parts connect](https://github.com/vasilisnasopoulos-stack/blob/main/SLICES.md).
+> [how the parts connect](https://github.com/vasilisnasopoulos-stack/vasilisnasopoulos-stack/blob/main/SLICES.md).
 > Nothing here claims they are verified on GitHub.
 
 ## System Overview
