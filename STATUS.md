@@ -3,7 +3,8 @@
 **Last run: 2026-05-31** · TLC (TLA2Tools) · Java 17 · exhaustive within the stated bounds.
 
 Both configurations completed with **0 errors** (no invariant or temporal-property
-violation). Raw logs are in `logs/`.
+violation). TLC logs are generated locally via `./run_tlc.sh` (not committed;
+see `.gitignore`). Committed Apalache per-invariant logs are in `apalache/ae_logs/`.
 
 ## `Vortex_DSE_CSlot_AE.tla`
 

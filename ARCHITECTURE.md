@@ -29,7 +29,7 @@
 │  └─────────────────────────────────────────────────────────┘   │
 │                                                                  │
 │  Spec: vortex-dse-cslot-spec/                                  │
-│  Status: 8.08M states, 0 errors (TLC + Apalache)               │
+│  Status: TLC bounded (see spec repo; not verified in this repo) │
 │                                                                  │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
