@@ -1,4 +1,4 @@
-# Contributing to vortex-merkle-agreement
+# Contributing to Vortex DSE — Merkle Agreement
 
 Thanks for helping improve the Merkle agreement layer specification.
 
