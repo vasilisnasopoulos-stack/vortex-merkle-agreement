@@ -73,16 +73,16 @@ Commit slot-final input set
 ## Freeze → Reconcile → Commit (visual)
 
 ```text
-OPEN
+Open (admission still open)
   └─ Freeze slot k
       (admission closed, local processed set snapshot)
            ↓
-RECONCILE
+Reconcile
   └─ Exchange summaries/sets
   └─ Union observed inputs for slot k
   └─ Compute candidate root
            ↓
-COMMIT
+Commit
   └─ Commit only when compared roots imply same set identity
   └─ Result: MerkleAgreement holds for committed correct live nodes
 ```
@@ -103,9 +103,9 @@ The headline property is `MerkleAgreement`:
 
 1. Read **Agreement layer in one paragraph** and **Freeze → Reconcile → Commit (visual)**.
 2. Open [`Vortex_DSE_CSlot_AE.tla`](./Vortex_DSE_CSlot_AE.tla) and locate `MerkleAgreement`.
-3. Check assumptions and bounded results in `STATUS.md`.
+3. Check assumptions and bounded verification results in the repository status docs.
 4. Run TLC and Apalache locally (see **Reproduce** section).
-5. Read [`ARCHITECTURE.md`](./ARCHITECTURE.md) for bundle-level context.
+5. Read the repository architecture overview for bundle-level context.
 6. See `CONTRIBUTING.md` if you want to submit improvements.
 
 ## Reproduce
