@@ -59,10 +59,9 @@ Commit slot-final input set
                              │
                     admitted inputs (per node)
                              │
-                 ┌───────────▼───────────┐
-                 │  Merkle Agreement      │
-                 │  Freeze - Reconcile - Commit  │
-                 └───────────┬───────────┘
+                 ┌──────────────────────────────────────────────┐
+                 │  Merkle Agreement: Freeze → Reconcile → Commit  │
+                 └──────────────────────────────────────────────┘
                              │
                    identical committed_set[k]
                              │
@@ -100,7 +99,7 @@ The headline property is `MerkleAgreement`:
 
 ## Quick start (first-time visitors)
 
-1. Read the agreement-layer introduction and the phase flow above.
+1. Read the agreement-layer introduction and the **Freeze → Reconcile → Commit (visual)** section.
 2. Open `Vortex_DSE_CSlot_AE.tla` and locate `MerkleAgreement`.
 3. Check assumptions and bounded results in `STATUS.md`.
 4. Run TLC locally (see below).
