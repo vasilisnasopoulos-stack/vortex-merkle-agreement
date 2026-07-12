@@ -102,12 +102,12 @@ The headline property is `MerkleAgreement`:
 1. Read the agreement-layer introduction and the **Freeze → Reconcile → Commit (visual)** section.
 2. Open `Vortex_DSE_CSlot_AE.tla` and locate `MerkleAgreement`.
 3. Check assumptions and bounded results in `STATUS.md`.
-4. Run TLC locally (see below).
-5. Run Apalache locally (see below).
+4. Run TLC locally (see **Reproduce** section).
+5. Run Apalache locally (see **Reproduce** section).
 6. Read `ARCHITECTURE.md` for bundle-level context.
 7. See `CONTRIBUTING.md` if you want to submit improvements.
 
-## Reproduce checks
+## Reproduce
 
 ### TLC
 
