@@ -4,8 +4,20 @@
 
 # Vortex DSE — Merkle Agreement
 
+[![TLC verification](https://img.shields.io/badge/TLC-bounded_checks_passing-brightgreen)](./STATUS.md)
+[![Apalache verification](https://img.shields.io/badge/Apalache-bounded_checks_passing-brightgreen)](./STATUS.md)
+
+Verification details for these badges are documented in [`STATUS.md`](./STATUS.md).
+
 TLA+ specification for the **per-slot input-set agreement** layer of Vortex DSE.
 After C-slot admission, correct live nodes converge on the same committed input set for that slot.
+
+## Agreement layer in one paragraph
+
+This repository isolates the agreement layer that runs after admission: nodes first stop admitting
+new inputs for slot `k` (**Freeze**), then exchange and union observations (**Reconcile**), and
+finally commit only when the resulting set identity matches by hash/Merkle root (**Commit**).
+The goal is deterministic slot agreement with explicit assumptions and reproducible model checks.
 
 ## Why this repo matters
 
@@ -40,6 +52,41 @@ Merkle/hash equality confirms identical set
 Commit slot-final input set
 ```
 
+## Visual architecture
+
+```text
+            ┌───────────────────────────────────────────────┐
+            │             Vortex DSE (slot k)               │
+            └───────────────────────────────────────────────┘
+                             │
+                    admitted inputs (per node)
+                             │
+                 ┌──────────────────────────────────────────────┐
+                 │  Merkle Agreement: Freeze → Reconcile → Commit  │
+                 └──────────────────────────────────────────────┘
+                             │
+                   identical committed_set[k]
+                             │
+                  shared Merkle/hash root[k]
+```
+
+## Freeze → Reconcile → Commit (visual)
+
+```text
+Open (admission still open)
+  └─ Freeze slot k
+      (admission closed, local processed set snapshot)
+           ↓
+Reconcile
+  └─ Exchange summaries/sets
+  └─ Union observed inputs for slot k
+  └─ Compute candidate root
+           ↓
+Commit
+  └─ Commit only when compared roots imply same set identity
+  └─ Result: MerkleAgreement holds for committed correct live nodes
+```
+
 ## Headline property
 
 The headline property is `MerkleAgreement`:
@@ -51,6 +98,15 @@ The headline property is `MerkleAgreement`:
 - Not the admission rule itself.
 - Not the full end-to-end consensus/finality story.
 - Not the private lossy or exactly-once refinements.
+
+## Quick start (first-time visitors)
+
+1. Read **Agreement layer in one paragraph** and **Freeze → Reconcile → Commit (visual)**.
+2. Open [`Vortex_DSE_CSlot_AE.tla`](./Vortex_DSE_CSlot_AE.tla) and locate `MerkleAgreement`.
+3. Check assumptions and bounded verification results in the repository status docs.
+4. Run TLC and Apalache locally (see **Reproduce** section).
+5. Read the repository architecture overview for bundle-level context.
+6. See `CONTRIBUTING.md` if you want to submit improvements.
 
 ## Reproduce
 
