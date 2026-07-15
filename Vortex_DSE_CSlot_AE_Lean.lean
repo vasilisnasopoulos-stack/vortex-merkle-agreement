@@ -49,7 +49,7 @@ def Init (s : SystemState Node MsgId) : Prop := s = initState
 
 def Submit (id : MsgId) (s s' : SystemState Node MsgId) : Prop :=
   (∀ m, m ∈ s.network → m.id ≠ id) ∧
-  s' = { s with network := s.network ∪ {m | m.id = id ∧ m.cslot = s.currentSlot} }
+  s' = { s with network := s.network ∪ ({⟨id, s.currentSlot⟩} : Set (MsgRecord MsgId)) }
 
 def Process (n : Node) (m : MsgRecord MsgId) (s s' : SystemState Node MsgId) : Prop :=
   m ∈ s.network ∧
@@ -107,7 +107,7 @@ def TypeInvariant (maxSlot : Nat) (s : SystemState Node MsgId) : Prop :=
 -- Mirrors the explicit TLA+ phase-domain invariant.
 -- In Lean this check is redundant because `Phase` is a closed inductive type.
 -- We still keep the explicit membership form to preserve direct correspondence
--- with the TLA+ invariant statement.
+-- with the TLA+ invariant statement and document the phase-domain constraint.
 def PhaseProgressionValid (s : SystemState Node MsgId) : Prop :=
   ∀ n : Node, s.phase n ∈ ({Phase.open, Phase.frozen, Phase.reconciled, Phase.committed} : Set Phase)
 
