@@ -133,7 +133,7 @@ It formalizes:
 - protocol types (`Phase`, `MsgRecord`, `NodeState`, `SystemState`)
 - transition relations (`Submit`, `Process`, `Freeze`, `Reconcile`, `Commit`, `NextCslot`)
 - reachable-state trace induction
-- proved safety theorems:
+- proven safety theorems:
   - `reachable_typeInvariant`
   - `reachable_committedSupersetsProcessed`
   - `reachable_merkleAgreement`
