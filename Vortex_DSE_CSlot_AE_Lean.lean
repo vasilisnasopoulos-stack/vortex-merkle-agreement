@@ -108,6 +108,7 @@ def TypeInvariant (maxSlot : Nat) (s : SystemState Node MsgId) : Prop :=
 -- In Lean this check is redundant because `Phase` is a closed inductive type.
 -- We still keep the explicit membership form to preserve direct correspondence
 -- with the TLA+ invariant statement and document the phase-domain constraint.
+-- Keeping it in `Inv` also mirrors the explicit proof obligations from TLA+.
 def PhaseProgressionValid (s : SystemState Node MsgId) : Prop :=
   ∀ n : Node, s.phase n ∈ ({Phase.open, Phase.frozen, Phase.reconciled, Phase.committed} : Set Phase)
 
@@ -251,21 +252,21 @@ theorem reachable_inv {maxSlot : Nat} {s : SystemState Node MsgId}
   | step hreach ih hstep =>
       exact inv_preserved_by_step ih hstep
 
--- Requested theorem 3: TypeInvariant by trace induction
+-- TypeInvariant by trace induction
 
 theorem reachable_typeInvariant {maxSlot : Nat} {s : SystemState Node MsgId}
     (hreach : Reachable (Node := Node) (MsgId := MsgId) maxSlot s) :
     TypeInvariant (Node := Node) (MsgId := MsgId) maxSlot s :=
   (reachable_inv hreach).1
 
--- Requested theorem 4: committed set is a superset of processed
+-- Committed set is a superset of processed
 
 theorem reachable_committedSupersetsProcessed {maxSlot : Nat} {s : SystemState Node MsgId}
     (hreach : Reachable (Node := Node) (MsgId := MsgId) maxSlot s) :
     CommittedSupersetsProcessed (Node := Node) (MsgId := MsgId) s :=
   (reachable_inv hreach).2.2.1
 
--- Requested theorem 5: Merkle agreement among committed nodes
+-- Merkle agreement among committed nodes
 
 theorem reachable_merkleAgreement {maxSlot : Nat} {s : SystemState Node MsgId}
     (hreach : Reachable (Node := Node) (MsgId := MsgId) maxSlot s) :
@@ -277,7 +278,7 @@ theorem reachable_reconciledContainsProcessed {maxSlot : Nat} {s : SystemState N
     ReconciledContainsProcessed (Node := Node) (MsgId := MsgId) s :=
   (reachable_inv hreach).2.2.2.2
 
--- Requested theorem 6: structural progression lemmas
+-- Structural progression lemmas
 
 lemma freeze_to_frozen {n : Node} {s s' : SystemState Node MsgId}
     (h : Freeze n s s') : s'.phase n = Phase.frozen := by
