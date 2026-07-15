@@ -122,6 +122,22 @@ The headline property is `MerkleAgreement`:
 APALACHE_BIN=/path/to/apalache-mc ./run_apalache.sh
 ```
 
+## Lean 4 formalization (trace-induction model)
+
+This repository now also includes a Lean 4 model/proof sketch in:
+
+- `Vortex_DSE_CSlot_AE_Lean.lean`
+
+It formalizes:
+
+- protocol types (`Phase`, `MsgRecord`, `NodeState`, `SystemState`)
+- transition relations (`Submit`, `Process`, `Freeze`, `Reconcile`, `Commit`, `NextCslot`)
+- reachable-state trace induction
+- proved safety theorems:
+  - `reachable_typeInvariant`
+  - `reachable_committedSupersetsProcessed`
+  - `reachable_merkleAgreement`
+
 ## Suggested reviewer path
 
 1. Read the one-sentence summary.
