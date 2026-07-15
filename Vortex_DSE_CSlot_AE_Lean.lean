@@ -105,8 +105,9 @@ def TypeInvariant (maxSlot : Nat) (s : SystemState Node MsgId) : Prop :=
   s.currentSlot ≤ maxSlot
 
 -- Mirrors the explicit TLA+ phase-domain invariant.
--- In Lean this is structurally true with the current `Phase` inductive type,
--- but we keep it as a named property to preserve correspondence with the spec.
+-- In Lean this check is redundant because `Phase` is a closed inductive type.
+-- We still keep the explicit membership form to preserve direct correspondence
+-- with the TLA+ invariant statement.
 def PhaseProgressionValid (s : SystemState Node MsgId) : Prop :=
   ∀ n : Node, s.phase n ∈ ({Phase.open, Phase.frozen, Phase.reconciled, Phase.committed} : Set Phase)
 
@@ -153,8 +154,8 @@ lemma phase_valid_update {s : SystemState Node MsgId} {n : Node} {p : Phase}
   · simpa [Function.update, hk] using hvalid k
 
 lemma unionProcessed_superset (s : SystemState Node MsgId) (n : Node) : s.processed n ⊆ unionProcessed s := by
-  intro id hid
-  exact ⟨n, hid⟩
+  intro id h_mem
+  exact ⟨n, h_mem⟩
 
 lemma inv_preserved_by_step {maxSlot : Nat} {s s' : SystemState Node MsgId}
     (hinv : Inv maxSlot s) (hstep : Step maxSlot s s') :
