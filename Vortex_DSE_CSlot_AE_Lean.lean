@@ -166,21 +166,19 @@ lemma inv_preserved_by_step {maxSlot : Nat} {s s' : SystemState Node MsgId}
       · intro n₁ n₂ h₁ h₂
         simpa using hagree n₁ n₂ h₁ h₂
   | process n m hproc =>
-      rcases hproc with ⟨_, _, _, _, rfl⟩
+      rcases hproc with ⟨_, hopen, _, _, rfl⟩
       refine ⟨htype, hphase, ?_, ?_, ?_⟩
       · intro k hk
         by_cases hkn : k = n
         · subst hkn
-          have : s.phase n = Phase.committed := hk
-          exact False.elim (by simpa using this)
+          simpa [hopen] using hk
         · simpa [Function.update, hkn] using hsup k hk
       · intro n₁ n₂ h₁ h₂
         simpa using hagree n₁ n₂ h₁ h₂
       · intro k hk
         by_cases hkn : k = n
         · subst hkn
-          have : s.phase n = Phase.reconciled := hk
-          exact False.elim (by simpa using this)
+          simpa [hopen] using hk
         · simpa [Function.update, hkn] using hreconciled k hk
   | freeze n hfr =>
       rcases hfr with ⟨hn, rfl⟩
