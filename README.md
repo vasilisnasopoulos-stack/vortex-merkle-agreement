@@ -124,7 +124,7 @@ APALACHE_BIN=/path/to/apalache-mc ./run_apalache.sh
 
 ## Lean 4 formalization (trace-induction model)
 
-This repository now also includes a Lean 4 model/proof sketch in:
+This repository now also includes a Lean 4 model and proofs in:
 
 - `Vortex_DSE_CSlot_AE_Lean.lean`
 
