@@ -104,6 +104,9 @@ inductive Reachable (maxSlot : Nat) : SystemState Node MsgId → Prop where
 def TypeInvariant (maxSlot : Nat) (s : SystemState Node MsgId) : Prop :=
   s.currentSlot ≤ maxSlot
 
+-- Mirrors the explicit TLA+ phase-domain invariant.
+-- In Lean this is structurally true with the current `Phase` inductive type,
+-- but we keep it as a named property to preserve correspondence with the spec.
 def PhaseProgressionValid (s : SystemState Node MsgId) : Prop :=
   ∀ n : Node, s.phase n ∈ ({Phase.open, Phase.frozen, Phase.reconciled, Phase.committed} : Set Phase)
 
@@ -267,6 +270,11 @@ theorem reachable_merkleAgreement {maxSlot : Nat} {s : SystemState Node MsgId}
     (hreach : Reachable (Node := Node) (MsgId := MsgId) maxSlot s) :
     MerkleAgreement (Node := Node) (MsgId := MsgId) s :=
   (reachable_inv hreach).2.2.2.1
+
+theorem reachable_reconciledContainsProcessed {maxSlot : Nat} {s : SystemState Node MsgId}
+    (hreach : Reachable (Node := Node) (MsgId := MsgId) maxSlot s) :
+    ReconciledContainsProcessed (Node := Node) (MsgId := MsgId) s :=
+  (reachable_inv hreach).2.2.2.2
 
 -- Requested theorem 6: structural progression lemmas
 

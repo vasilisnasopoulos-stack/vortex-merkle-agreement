@@ -137,6 +137,7 @@ It formalizes:
   - `reachable_typeInvariant`
   - `reachable_committedSupersetsProcessed`
   - `reachable_merkleAgreement`
+  - `reachable_reconciledContainsProcessed`
 
 ## Suggested reviewer path
 
