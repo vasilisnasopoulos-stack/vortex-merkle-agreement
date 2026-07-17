@@ -1,0 +1,40 @@
+name: Lean proof check
+
+on:
+  push:
+    paths:
+      - "**.lean"
+      - "lakefile.lean"
+      - "lean-toolchain"
+      - ".github/workflows/lean.yml"
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Build (lake build)
+        run: |
+          set -o pipefail
+          lake update 2>&1 | tee lake_update.log
+          lake build 2>&1 | tee lake_build.log
+
+      - name: Verify build actually succeeded
+        run: |
+          if grep -qiE "error|failed" lake_build.log; then
+            echo "Lean build reported errors — failing the job."
+            exit 1
+          fi
+          if [ ! -d .lake/build ]; then
+            echo "No .lake/build output directory found — build did not run."
+            exit 1
+          fi
+          echo "Lean proof compiled cleanly with no errors."
