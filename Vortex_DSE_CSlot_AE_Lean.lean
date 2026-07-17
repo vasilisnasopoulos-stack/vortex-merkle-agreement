@@ -256,7 +256,7 @@ theorem reachable_inv {maxSlot : Nat} {s : SystemState Node MsgId}
   induction hreach with
   | base =>
       simpa using init_inv (Node := Node) (MsgId := MsgId) maxSlot
-  | step hreach ih hstep =>
+  | step hreach hstep ih =>
       exact inv_preserved_by_step ih hstep
 
 -- TypeInvariant by trace induction
