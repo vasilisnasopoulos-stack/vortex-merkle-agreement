@@ -3,7 +3,7 @@ open Lake DSL
 
 package «vortex_merkle_agreement» where
 
-require std from git "https://github.com/leanprover/std4" @ "main"
+require mathlib from git "https://github.com/leanprover-community/mathlib4" @ "master"
 
 @[default_target]
 lean_lib «VortexMerkleAgreement» where
