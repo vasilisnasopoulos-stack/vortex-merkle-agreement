@@ -192,7 +192,9 @@ lemma inv_preserved_by_step {maxSlot : Nat} {s s' : SystemState Node MsgId}
         by_cases hkn : k = n
         · subst hkn
           simp [Function.update_apply] at hk
-        · simpa [Function.update_apply, hkn] using hsup k hk
+        · have hk' : s.phase k = Phase.committed := by
+            simpa [Function.update_apply, hkn] using hk
+          exact hsup k hk'
       · intro n₁ n₂ h₁ h₂
         by_cases h1n : n₁ = n
         · subst h1n
@@ -200,12 +202,18 @@ lemma inv_preserved_by_step {maxSlot : Nat} {s s' : SystemState Node MsgId}
         · by_cases h2n : n₂ = n
           · subst h2n
             simp [Function.update_apply] at h₂
-          · simpa [Function.update_apply, h1n, h2n] using hagree n₁ n₂ h₁ h₂
+          · have h₁' : s.phase n₁ = Phase.committed := by
+              simpa [Function.update_apply, h1n] using h₁
+            have h₂' : s.phase n₂ = Phase.committed := by
+              simpa [Function.update_apply, h2n] using h₂
+            exact hagree n₁ n₂ h₁' h₂'
       · intro k hk
         by_cases hkn : k = n
         · subst hkn
           simp [Function.update_apply] at hk
-        · simpa [Function.update_apply, hkn] using hreconciled k hk
+        · have hk' : s.phase k = Phase.reconciled := by
+            simpa [Function.update_apply, hkn] using hk
+          exact hreconciled k hk'
   | reconcile hrec =>
       rcases hrec with ⟨hall, rfl⟩
       refine ⟨htype, ?_, ?_, ?_, ?_⟩
