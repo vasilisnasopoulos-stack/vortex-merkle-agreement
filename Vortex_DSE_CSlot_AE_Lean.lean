@@ -22,7 +22,6 @@ structure NodeState (MsgId : Type) where
   processed : Set MsgId
   phase : Phase
   committedSet : Set MsgId
-  deriving Repr
 
 structure SystemState (Node MsgId : Type) where
   currentSlot : Nat
@@ -151,8 +150,8 @@ lemma phase_valid_update {s : SystemState Node MsgId} {n : Node} {p : Phase}
   intro k
   by_cases hk : k = n
   · subst hk
-    simpa [Function.update]
-  · simpa [Function.update, hk] using hvalid k
+    simpa [Function.update_apply]
+  · simpa [Function.update_apply, hk] using hvalid k
 
 lemma unionProcessed_superset (s : SystemState Node MsgId) (n : Node) : s.processed n ⊆ unionProcessed s := by
   intro id h_mem
@@ -177,14 +176,14 @@ lemma inv_preserved_by_step {maxSlot : Nat} {s s' : SystemState Node MsgId}
         by_cases hkn : k = n
         · subst hkn
           simpa [hopen] using hk
-        · simpa [Function.update, hkn] using hsup k hk
+        · simpa [Function.update_apply, hkn] using hsup k hk
       · intro n₁ n₂ h₁ h₂
         simpa using hagree n₁ n₂ h₁ h₂
       · intro k hk
         by_cases hkn : k = n
         · subst hkn
           simpa [hopen] using hk
-        · simpa [Function.update, hkn] using hreconciled k hk
+        · simpa [Function.update_apply, hkn] using hreconciled k hk
   | freeze n hfr =>
       rcases hfr with ⟨hn, rfl⟩
       refine ⟨htype, ?_, ?_, ?_, ?_⟩
@@ -192,21 +191,21 @@ lemma inv_preserved_by_step {maxSlot : Nat} {s s' : SystemState Node MsgId}
       · intro k hk
         by_cases hkn : k = n
         · subst hkn
-          simp [Function.update] at hk
-        · simpa [Function.update, hkn] using hsup k hk
+          simp [Function.update_apply] at hk
+        · simpa [Function.update_apply, hkn] using hsup k hk
       · intro n₁ n₂ h₁ h₂
         by_cases h1n : n₁ = n
         · subst h1n
-          simp [Function.update] at h₁
+          simp [Function.update_apply] at h₁
         · by_cases h2n : n₂ = n
           · subst h2n
-            simp [Function.update] at h₂
-          · simpa [Function.update, h1n, h2n] using hagree n₁ n₂ h₁ h₂
+            simp [Function.update_apply] at h₂
+          · simpa [Function.update_apply, h1n, h2n] using hagree n₁ n₂ h₁ h₂
       · intro k hk
         by_cases hkn : k = n
         · subst hkn
-          simp [Function.update] at hk
-        · simpa [Function.update, hkn] using hreconciled k hk
+          simp [Function.update_apply] at hk
+        · simpa [Function.update_apply, hkn] using hreconciled k hk
   | reconcile hrec =>
       rcases hrec with ⟨hall, rfl⟩
       refine ⟨htype, ?_, ?_, ?_, ?_⟩
@@ -283,7 +282,7 @@ theorem reachable_reconciledContainsProcessed {maxSlot : Nat} {s : SystemState N
 lemma freeze_to_frozen {n : Node} {s s' : SystemState Node MsgId}
     (h : Freeze n s s') : s'.phase n = Phase.frozen := by
   rcases h with ⟨_, rfl⟩
-  simp [Freeze, Function.update]
+  simp [Function.update_apply]
 
 lemma reconcile_to_reconciled {s s' : SystemState Node MsgId}
     (h : Reconcile s s') : ∀ n : Node, s'.phase n = Phase.reconciled := by
