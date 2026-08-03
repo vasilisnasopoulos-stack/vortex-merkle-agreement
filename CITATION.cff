@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+title: "Vortex DSE — per-slot Merkle agreement"
+message: Please cite this work using these metadata.
+type: software
+authors:
+  - given-names: Vasilis
+    family-names: Nasopoulos
+abstract: >-
+  TLA+ specification and machine-checked proofs of the per-slot agreement layer of the Vortex DSE consensus protocol, checked with TLC, Apalache and Lean 4.
+repository-code: "https://github.com/vasilisnasopoulos-stack/vortex-merkle-agreement"
+url: "https://vasilisnasopoulos-stack.github.io"
+license: Apache-2.0
+keywords:
+  - TLA+
+  - TLAPS
+  - formal methods
+  - distributed consensus
+  - model checking
