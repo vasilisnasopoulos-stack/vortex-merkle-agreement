@@ -4,7 +4,7 @@
 > **This repository publishes only the baseline agreement part**
 > (`Vortex_DSE_CSlot_AE.tla`). Lossy, exactly-once, and composed modules referenced
 > below are **not in this repo** — see
-> [how the parts connect](https://github.com/vasilisnasopoulos-stack/blob/main/SLICES.md).
+> [how the parts connect](https://github.com/vasilisnasopoulos/blob/main/SLICES.md).
 > Nothing here claims they are verified on GitHub.
 
 ## System Overview
@@ -248,7 +248,7 @@ but are critical to validity:
 ## Repository Structure
 
 ```
-vasilisnasopoulos-stack/
+vasilisnasopoulos/
 
 ├── vortex-dse-cslot-spec/
 │   │   [CORE: C-slot admission rule + Byzantine variant]
@@ -334,7 +334,7 @@ node ref_impl/cslot_ref.mjs
                   Loss Recovery via Merkle Union + 
                   Cross-Slot Exactly-Once Deduplication},
   year         = {2026},
-  howpublished = {\url{https://github.com/vasilisnasopoulos-stack/vortex-merkle-agreement}},
+  howpublished = {\url{https://github.com/vasilisnasopoulos/vortex-merkle-agreement}},
   note         = {Companion specs: vortex-loss-recoverability, vortex-dse-cslot-spec}
 }
 ```

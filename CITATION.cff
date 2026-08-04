@@ -7,8 +7,8 @@ authors:
     family-names: Nasopoulos
 abstract: >-
   TLA+ specification and machine-checked proofs of the per-slot agreement layer of the Vortex DSE consensus protocol, checked with TLC, Apalache and Lean 4.
-repository-code: "https://github.com/vasilisnasopoulos-stack/vortex-merkle-agreement"
-url: "https://vasilisnasopoulos-stack.github.io"
+repository-code: "https://github.com/vasilisnasopoulos/vortex-merkle-agreement"
+url: "https://vasilisnasopoulos.github.io"
 license: Apache-2.0
 keywords:
   - TLA+
